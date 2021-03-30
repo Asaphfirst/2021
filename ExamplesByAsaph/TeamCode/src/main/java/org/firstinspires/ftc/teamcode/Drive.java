@@ -36,7 +36,9 @@ import com.qualcomm.robotcore.util.Range;
 
 
 /**
- *
+ *This Opmode is an example of how use encoders
+ * The drivetrain will move to a target distance using encoders
+ * Motors stop when the robot reaches the target distance
  */
 
 @Autonomous(name="Drive", group="Linear Opmode")
