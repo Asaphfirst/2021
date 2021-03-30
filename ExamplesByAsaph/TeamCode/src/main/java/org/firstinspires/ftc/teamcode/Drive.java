@@ -30,40 +30,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import java.lang.Math;
 
 
 /**
- * This Opmode is an example of a Proportional Controller
- * The drivetrain will move to a target distance using encoders and slow down when it approaches using proportional
- *
- * Error = Target - Current Position
- * Target is the distance that the robot will move to
- * Current position is an average of all the encoders
- * Kp is a constant that needs to be tuned
- * Gain = Error*Kp
- * velocity = speed*gain
- * velocity will store the result
- * speed is a constant chosen by the user
- * gain will decrease as the drivetrain approaches the target
- *
- * Proportional controller is a good solution for controlling a drivetrain autonomously,
- * but the robot will never reach the target, there will always be a steady state error.
- * The Steady State Error will not be too big, but it can make the code get stuck in the PDrive loop.
- * The solution for that is to exit the loop once the error is very small.
  *
  */
 
-@Autonomous(name="Proportional Drive", group="Linear Opmode")
+@Autonomous(name="Drive", group="Linear Opmode")
 //@Disabled
-public class P_Drive extends LinearOpMode {
+public class Drive extends LinearOpMode {
 
     // Declare OpMode members.
     private DcMotor left1 = null;
@@ -71,7 +49,6 @@ public class P_Drive extends LinearOpMode {
     private DcMotor right1 = null;
     private DcMotor right2 = null;
 
-    static final double     kp = 0.0013394053; // kp=1/(746.6*constant)
     static final double     COUNTS_PER_MOTOR_REV    = 746.6 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
@@ -96,19 +73,15 @@ public class P_Drive extends LinearOpMode {
 
         resetEncoders();
         // Wait for the game to start (driver presses PLAY)
-        telemetry.addData("Position:", getCurrentPosition());
-        telemetry.update();
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        pDrive(50,1);
+        Drive(50,1);
 
     }
 
-    public void pDrive(double distance, double speed){
+    public void Drive(double distance, double speed){
 
-        double velocity;
-        double gain;
         int target;
 
         resetEncoders();
@@ -127,21 +100,13 @@ public class P_Drive extends LinearOpMode {
         right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()) {
+        while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()){
 
-            gain = calcGain(target);
 
-            // if driving in reverse, the motor correction also needs to be reversed
-            if (distance < 0)
-                gain *= -1.0;
-
-            velocity = speed*gain;
-            velocity = Range.clip(Math.abs(velocity), 0.0, 1.0);
-
-            left1.setPower(velocity);
-            right1.setPower(velocity);
-            left2.setPower(velocity);
-            right2.setPower(velocity);
+            left1.setPower(speed);
+            right1.setPower(speed);
+            left2.setPower(speed);
+            right2.setPower(speed);
 
             telemetry.update();
         }
@@ -155,9 +120,10 @@ public class P_Drive extends LinearOpMode {
         right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        while(opModeIsActive()){
+        while(opModeIsActive()) {
             print(target);
         }
+
     }
     public double getCurrentPosition(){
         return Math.abs(left1.getCurrentPosition() + left2.getCurrentPosition()
@@ -166,9 +132,6 @@ public class P_Drive extends LinearOpMode {
     }
     public double getError(double Target){
         return Target - getCurrentPosition();
-    }
-    public double calcGain(double Target){
-        return  Range.clip( getError(Target)*kp, -1,1);
     }
     public void resetEncoders(){
         left1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

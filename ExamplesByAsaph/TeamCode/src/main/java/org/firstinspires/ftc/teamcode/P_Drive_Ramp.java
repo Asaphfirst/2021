@@ -32,8 +32,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import java.lang.annotation.Target;
 
 
 /**
@@ -57,7 +60,7 @@ import com.qualcomm.robotcore.util.Range;
  *
  */
 
-@Autonomous(name="Proportional Drive", group="Linear Opmode")
+@Autonomous(name="Proportional Drive with Ramp", group="Linear Opmode")
 //@Disabled
 public class P_Drive_Ramp extends LinearOpMode {
 
@@ -69,10 +72,10 @@ public class P_Drive_Ramp extends LinearOpMode {
     private DcMotor right2 = null;
 
 
-    static final double     INCREMENT   = 0.01;     // amount to ramp motor each CYCLE_MS cycle
+    static final double     INCREMENT   = 0.04;     // amount to ramp motor each CYCLE_MS cycle
     static final int        CYCLE_MS    =   50;     // period of each cycle
     static final double     MAX_FWD     =  1.0;     // Maximum FWD power applied to motor
-    static final double     kp = 0; // kp=1/(746.6*constant)
+    static final double     kp =  0.0013394053; // kp=1/(746.6*constant) // 0.00066970265;
     static final double     COUNTS_PER_MOTOR_REV    = 746.6 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
@@ -92,16 +95,16 @@ public class P_Drive_Ramp extends LinearOpMode {
         // Reverse the motor that runs backwards when connected directly to the battery
         left1.setDirection(DcMotor.Direction.FORWARD);
         left2.setDirection(DcMotor.Direction.FORWARD);
-        left1.setDirection(DcMotor.Direction.FORWARD);
-        left2.setDirection(DcMotor.Direction.FORWARD);
+        right1.setDirection(DcMotor.Direction.REVERSE);
+        right2.setDirection(DcMotor.Direction.REVERSE );
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-        pDrive(10,1, true);
-        }
+
+        pDrive(50,1, true);
+
     }
 
     public void pDrive(double distance, double speed, boolean rampUp){
@@ -131,13 +134,6 @@ public class P_Drive_Ramp extends LinearOpMode {
         left2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // start motion.
-        speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-        left1.setPower(speed);
-        right1.setPower(speed);
-        left2.setPower(speed);
-        right2.setPower(speed);
-
         while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()) {
 
             gain = calcGain(target);
@@ -164,6 +160,8 @@ public class P_Drive_Ramp extends LinearOpMode {
             right1.setPower(velocity);
             left2.setPower(velocity);
             right2.setPower(velocity);
+
+            print(target);
         }
 
         // Stop all motion;
@@ -174,6 +172,10 @@ public class P_Drive_Ramp extends LinearOpMode {
         left2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while(opModeIsActive()){
+          print(target);
+        }
 
     }
     public double getCurrentPosition(){
@@ -198,6 +200,12 @@ public class P_Drive_Ramp extends LinearOpMode {
         left2.setPower(0);
         right1.setPower(0);
         right2.setPower(0);
+    }
+    public void print(double target){
+        telemetry.addData("Error", getError(target));
+        telemetry.addData("Error in distance", getError(target)/COUNTS_PER_INCH);
+        telemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
+        telemetry.update();
     }
 
 
