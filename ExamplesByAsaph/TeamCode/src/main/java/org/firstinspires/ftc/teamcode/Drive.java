@@ -51,7 +51,7 @@ public class Drive extends LinearOpMode {
     private DcMotor right1 = null;
     private DcMotor right2 = null;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 746.6 ;    //
+    static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -72,13 +72,12 @@ public class Drive extends LinearOpMode {
         right1.setDirection(DcMotor.Direction.REVERSE);
         right2.setDirection(DcMotor.Direction.REVERSE);
 
-
-        resetEncoders();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         Drive(50,1);
+
 
     }
 
@@ -104,13 +103,11 @@ public class Drive extends LinearOpMode {
 
         while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()){
 
-
             left1.setPower(speed);
             right1.setPower(speed);
             left2.setPower(speed);
             right2.setPower(speed);
 
-            telemetry.update();
         }
 
         // Stop all motion;

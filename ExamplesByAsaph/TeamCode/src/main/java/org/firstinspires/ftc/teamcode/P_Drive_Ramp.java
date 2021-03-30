@@ -75,8 +75,8 @@ public class P_Drive_Ramp extends LinearOpMode {
     static final double     INCREMENT   = 0.04;     // amount to ramp motor each CYCLE_MS cycle
     static final int        CYCLE_MS    =   50;     // period of each cycle
     static final double     MAX_FWD     =  1.0;     // Maximum FWD power applied to motor
-    static final double     kp =  0.0013394053; // kp=1/(746.6*constant) // 0.00066970265;
-    static final double     COUNTS_PER_MOTOR_REV    = 746.6 ;    //
+    static final double     kp =  0.00202674492; // kp=1/(746.6*constant) // 0.00066970265;
+    static final double     COUNTS_PER_MOTOR_REV    = 704.86;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /

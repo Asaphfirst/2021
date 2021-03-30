@@ -55,7 +55,7 @@ public class Gyro_Reset extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     BNO055IMU imu;
     Orientation angles;
-    Orientation             last_angle = new Orientation();
+    Orientation  last_angle = new Orientation();
     double angle;
 
     @Override
@@ -76,13 +76,13 @@ public class Gyro_Reset extends LinearOpMode {
 
         while(opModeIsActive()){
 
-            if(runtime.seconds() >= 3){
+            if(runtime.seconds() >= 10){
                 resetGyro();
                 runtime.reset();
             }
 
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("Origininal Angle:", angles.firstAngle);
+            telemetry.addData("Original Angle:", angles.firstAngle);
             telemetry.addData("Angle:", getAngle());
             telemetry.update();
 
@@ -98,16 +98,16 @@ public class Gyro_Reset extends LinearOpMode {
 
         double angle = angles.firstAngle - last_angle.firstAngle;
 
-        if (angle < -180)
-            angle += 360;
-        else if (angle > 180)
-            angle -= 360;
-
-        angle += angle;
-
-        last_angle = angles;
-
         return angle;
     }
 
 }
+
+    /*  if (angle < -180)
+            angle += 360;
+        else if (angle > 180)
+            angle -= 360;
+
+        angle += angle;*/
+
+// last_angle = angles;

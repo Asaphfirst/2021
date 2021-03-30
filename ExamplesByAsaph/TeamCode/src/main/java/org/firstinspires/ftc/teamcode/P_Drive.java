@@ -71,8 +71,8 @@ public class P_Drive extends LinearOpMode {
     private DcMotor right1 = null;
     private DcMotor right2 = null;
 
-    static final double     kp = 0.0013394053; // kp=1/(746.6*constant)
-    static final double     COUNTS_PER_MOTOR_REV    = 746.6 ;    //
+    static final double     kp = 0.00202674492; // kp=1/(704.86*constant)
+    static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -96,8 +96,6 @@ public class P_Drive extends LinearOpMode {
 
         resetEncoders();
         // Wait for the game to start (driver presses PLAY)
-        telemetry.addData("Position:", getCurrentPosition());
-        telemetry.update();
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
