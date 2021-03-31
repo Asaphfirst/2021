@@ -41,10 +41,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 /**
- * This Opmode is an example of how to read the angle of the gyroscope (Inertial Sensor)
+ * This Opmode is an example of how to read the angle of the gyroscope (Inertial Sensor) and "reset" the sensor
  * https://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
  *
  *  it's more accurate since you turn to absolute headings instead of relative which will build error with each turn.
+ *  https://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
  */
 
 @Autonomous(name="Gyro Reset - Example", group="Linear Opmode")
@@ -52,6 +53,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class Gyro_Reset extends LinearOpMode {
 
     // Declare OpMode members.
+
     private ElapsedTime runtime = new ElapsedTime();
     BNO055IMU imu;
     Orientation angles;
@@ -63,7 +65,7 @@ public class Gyro_Reset extends LinearOpMode {
 
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -73,21 +75,19 @@ public class Gyro_Reset extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+        while (opModeIsActive()) {
 
-        while(opModeIsActive()){
-
-            if(runtime.seconds() >= 10){
+            if (gamepad1.a)
                 resetGyro();
-                runtime.reset();
-            }
 
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("Original Angle:", angles.firstAngle);
             telemetry.addData("Angle:", getAngle());
             telemetry.update();
 
         }
     }
+
     public void resetGyro(){
         last_angle  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         angle = 0;
@@ -97,6 +97,11 @@ public class Gyro_Reset extends LinearOpMode {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double angle = angles.firstAngle - last_angle.firstAngle;
+
+         if (angle < -180)
+            angle += 360;
+        else if (angle > 180)
+            angle -= 360;
 
         return angle;
     }

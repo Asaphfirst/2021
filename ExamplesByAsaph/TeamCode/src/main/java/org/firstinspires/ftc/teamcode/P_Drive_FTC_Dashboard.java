@@ -29,21 +29,21 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import java.lang.Math;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 /**
  * This Opmode is an example of a Proportional Controller
  * The drivetrain will move to a target distance using encoders and slow down when it approaches using proportional
  *
+ * ---------------------------- PROPORTIONAL ------------------------------------
  * Error = Target - Current Position
  * Target is the distance that the robot will move to
  * Current position is an average of all the encoders
@@ -59,11 +59,20 @@ import java.lang.Math;
  * The Steady State Error will not be too big, but it can make the code get stuck in the PDrive loop.
  * The solution for that is to exit the loop once the error is very small.
  *
+ * ---------------------------- FTC DASHBOARD ------------------------------------
+ * https://acmerobotics.github.io/ftc-dashboard/
+ * Kp and target distance can be changed using the dashboard
+ * Prints a graph of the position
+ * To open the dashboard connect your laptop to the robot's wifi and then access this address using a browser:
+ * http://192.168.43.1:8080/dash
  */
-
-@Autonomous(name="Proportional Drive", group="Linear Opmode")
+@Config
+@Autonomous(name="P_Drive_FTC_Dashboard", group="Linear Opmode")
 //@Disabled
-public class P_Drive extends LinearOpMode {
+public class P_Drive_FTC_Dashboard extends LinearOpMode {
+
+    FtcDashboard dashboard;
+
 
     // Declare OpMode members.
     private DcMotor left1 = null;
@@ -71,7 +80,10 @@ public class P_Drive extends LinearOpMode {
     private DcMotor right1 = null;
     private DcMotor right2 = null;
 
-    static final double     kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7;
+    public static  double     kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7;
+    public static  double      Target = 50;
+
+
     static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
@@ -80,7 +92,13 @@ public class P_Drive extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
+        dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+
+        //telemetry.addData("Status", "Initialized");
+
+
 
         left1  = hardwareMap.get(DcMotor.class, "left_1");
         left2 = hardwareMap.get(DcMotor.class, "left_2");
@@ -99,11 +117,11 @@ public class P_Drive extends LinearOpMode {
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        pDrive(50,1);
+        pDrive(Target,1, dashboardTelemetry);
 
     }
 
-    public void pDrive(double distance, double speed){
+    public void pDrive(double distance, double speed, Telemetry dashboardTelemetry){
 
         double velocity;
         double gain;
@@ -141,7 +159,7 @@ public class P_Drive extends LinearOpMode {
             left2.setPower(velocity);
             right2.setPower(velocity);
 
-            telemetry.update();
+           print(target,dashboardTelemetry);
         }
 
         // Stop all motion;
@@ -154,7 +172,7 @@ public class P_Drive extends LinearOpMode {
         right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         while(opModeIsActive()){
-            print(target);
+            print(target, dashboardTelemetry);
         }
     }
     public double getCurrentPosition(){
@@ -180,11 +198,16 @@ public class P_Drive extends LinearOpMode {
         right1.setPower(0);
         right2.setPower(0);
     }
-    public void print(double target){
-        telemetry.addData("Error", getError(target));
+    public void print(double target, Telemetry dashboardTelemetry){
+        /*telemetry.addData("Error", getError(target));
         telemetry.addData("Error in distance", getError(target)/COUNTS_PER_INCH);
         telemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
-        telemetry.update();
+        telemetry.update();*/
+
+
+        dashboardTelemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
+        dashboardTelemetry.update();
+
     }
 
 }
