@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -61,7 +62,7 @@ import java.lang.annotation.Target;
  */
 
 @Autonomous(name="Proportional Drive with Ramp", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class P_Drive_Ramp extends LinearOpMode {
 
     // Declare OpMode members.

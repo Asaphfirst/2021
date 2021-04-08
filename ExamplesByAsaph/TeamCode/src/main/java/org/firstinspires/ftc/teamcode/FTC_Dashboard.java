@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -48,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 @Config
 @Autonomous(name="FTC_Dashboard", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class FTC_Dashboard extends LinearOpMode {
 
     FtcDashboard dashboard;

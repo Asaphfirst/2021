@@ -35,7 +35,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -58,26 +60,29 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 @Config
-@TeleOp(name="PID", group="Linear Opmode")
-@Disabled
+@TeleOp(name="PID test", group="Linear Opmode")
+//@Disabled
 
-public class PID extends LinearOpMode {
+public class PID_test extends LinearOpMode {
 
     FtcDashboard dashboard;
 
     // Declare OpMode members.
-    private DcMotor left1 = null;
-    private DcMotor left2 = null;
-    private DcMotor right1 = null;
-    private DcMotor right2 = null;
+    private DcMotorEx left1 = null;
+    private DcMotorEx left2 = null;
+    private DcMotorEx right1 = null;
+    private DcMotorEx right2 = null;
+    private DcMotorEx shooter = null;
 
     double integral=0;
      //Kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7;
-    public static PIDCoefficients shooterPID = new PIDCoefficients(0.0047332348820,0,0);
+    public static PIDFCoefficients DrivetrainPID = new PIDFCoefficients(25,0.05,1.25,0);
+    PIDFCoefficients pidOrig,currentPID;
+
     public static  double      Target = 50;
     public double greatest_dist = 0;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
+    static final double     COUNTS_PER_MOTOR_REV    =  746.6 ;// Normal drivetrain 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -91,24 +96,40 @@ public class PID extends LinearOpMode {
         dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-        left1  = hardwareMap.get(DcMotor.class, "left_1");
-        left2 = hardwareMap.get(DcMotor.class, "left_2");
-        right1  = hardwareMap.get(DcMotor.class, "right_1");
-        right2 = hardwareMap.get(DcMotor.class, "right_2");
+        left1  = (DcMotorEx)hardwareMap.get(DcMotor.class, "left_1");
+        left2 = (DcMotorEx)hardwareMap.get(DcMotor.class, "left_2");
+        right1  = (DcMotorEx)hardwareMap.get(DcMotor.class,   "right_1");
+        right2 = (DcMotorEx)hardwareMap.get(DcMotor.class, "right_2");
+        shooter = (DcMotorEx)hardwareMap.get(DcMotor.class, "shooter");
 
         left1.setDirection(DcMotor.Direction.FORWARD);
         left2.setDirection(DcMotor.Direction.FORWARD);
         right1.setDirection(DcMotor.Direction.REVERSE);
         right2.setDirection(DcMotor.Direction.REVERSE);
 
-        /*left1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        left2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
+        left1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        left2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        right1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        right2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
+       pidOrig = left1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+       left1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+       left2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+       right1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+       right2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+
+
+       currentPID = left1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         waitForStart();
 
+
         PID_Drive(Target,0, dashboardTelemetry);
+
+
+
+
         }
 
         void PID_Drive(double distance, double allowable_error_IN, Telemetry dashboardTelemetry){
@@ -117,13 +138,16 @@ public class PID extends LinearOpMode {
 
         allowable_error_IN *= COUNTS_PER_INCH;
 
+
         double error = 0;
         double lastError = 0;
         double velocity;
+
         int target = (int) (distance * COUNTS_PER_INCH);
 
+        error = target - getCurrentPosition();
 
-            /*left1.setTargetPosition(target);
+            left1.setTargetPosition(target);
             left2.setTargetPosition(target);
             right1.setTargetPosition(target);
             right2.setTargetPosition(target);
@@ -131,52 +155,33 @@ public class PID extends LinearOpMode {
             left1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             left2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             right1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
+            right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            error = target - getCurrentPosition();
-            double t1=0;
             PIDTimer.reset();
 
-        while(opModeIsActive()){ //&& Math.abs(error) >= allowable_error_IN){
+        while (opModeIsActive() && left1.isBusy() && left2.isBusy() && right1.isBusy()  && right2.isBusy()){
 
             error = target - getCurrentPosition();
-
-            double changInError = lastError - error;
-            double t2 =PIDTimer.time();
-            integral += changInError*PIDTimer.time();
-            double derivative = changInError;///(t2 - t1);
-
-            double P = shooterPID.p*error;
-            double I = shooterPID.i*integral;
-            double D = shooterPID.d*derivative;
-
-            velocity = P+I+D;
-
-            velocity = Range.clip((velocity), -1.0, 1.0);
-
-            left1.setPower(velocity);
-            left2.setPower(velocity);
-            right1.setPower(velocity);
-            right2.setPower(velocity);
-
             print(target,dashboardTelemetry);
+            left1.setPower(1);
+            left2.setPower(1);
+            right1.setPower(1);
+            right2.setPower(1);
 
-            lastError =error;
-            t1=t2;
         }
-            stopMotors();
+         stopMotors();
 
+            while (opModeIsActive() || error>0){
+            error = target - getCurrentPosition();
+            print(target,dashboardTelemetry);
         }
-        void resetEncoders(){
+    }
+
+    void resetEncoders(){
             left1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             left2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             right1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             right2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            left1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            left2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            right1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            right2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     public double getCurrentPosition(){
         return (left1.getCurrentPosition() + left2.getCurrentPosition()
@@ -187,13 +192,22 @@ public class PID extends LinearOpMode {
 
         double dist = getCurrentPosition()/COUNTS_PER_INCH;
 
-        if(dist>greatest_dist)
+        if(dist>greatest_dist) {
             greatest_dist = dist;
+           double time = PIDTimer.time();
+        }
 
         
         dashboardTelemetry.addData("Distance", dist);
         dashboardTelemetry.addData("Peak", greatest_dist);
-        dashboardTelemetry.addData("Error", target- getCurrentPosition());
+        dashboardTelemetry.addData("Error", (target- getCurrentPosition())/COUNTS_PER_INCH);
+        dashboardTelemetry.addData("Original PID coef", pidOrig);
+        dashboardTelemetry.addData("Current PID coef", currentPID);
+        dashboardTelemetry.addData("Tolerance",   left2.getTargetPositionTolerance());
+        dashboardTelemetry.addData("Peak time", time);
+
+
+
         dashboardTelemetry.update();
     }
     public void stopMotors(){
@@ -201,6 +215,14 @@ public class PID extends LinearOpMode {
         left2.setPower(0);
         right1.setPower(0);
         right2.setPower(0);
+    }
+    public void pidShooter()    {
+        left1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (opModeIsActive()&& shooter.isBusy()){
+            shooter.setVelocity(0);
+        }
+        shooter.setPower(0);
     }
     }
 

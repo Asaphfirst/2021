@@ -62,7 +62,7 @@ import java.lang.Math;
  */
 
 @Autonomous(name="Proportional Drive", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class P_Drive extends LinearOpMode {
 
     // Declare OpMode members.
