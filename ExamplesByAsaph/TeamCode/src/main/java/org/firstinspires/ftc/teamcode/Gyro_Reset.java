@@ -108,12 +108,3 @@ public class Gyro_Reset extends LinearOpMode {
     }
 
 }
-
-    /*  if (angle < -180)
-            angle += 360;
-        else if (angle > 180)
-            angle -= 360;
-
-        angle += angle;*/
-
-// last_angle = angles;

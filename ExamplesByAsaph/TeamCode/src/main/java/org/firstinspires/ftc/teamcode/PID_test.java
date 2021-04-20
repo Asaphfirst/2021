@@ -53,6 +53,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * http://192.168.43.1:8080/dash
  *
  *
+ *https://www.youtube.com/watch?v=2Yif6PdXPWg
+ * https://docs.google.com/document/u/1/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/mobilebasic
+ * https://github.com/ftctechnh/ftc_app/wiki/Changing-PID-Coefficients
+ * https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
  *
  *
  * https://docs.revrobotics.com/rev-control-system/programming/using-encoder-feedback

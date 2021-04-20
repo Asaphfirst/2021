@@ -96,14 +96,12 @@ public class Drive_Straight_Gyro extends LinearOpMode {
     static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
     @Override
     public void runOpMode() {
         dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -112,89 +110,26 @@ public class Drive_Straight_Gyro extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-
-
         left1  = hardwareMap.get(DcMotor.class, "left_1");
         left2 = hardwareMap.get(DcMotor.class, "left_2");
         right1  = hardwareMap.get(DcMotor.class, "right_1");
         right2 = hardwareMap.get(DcMotor.class, "right_2");
+
         // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
         left1.setDirection(DcMotor.Direction.FORWARD);
         left2.setDirection(DcMotor.Direction.FORWARD);
         right1.setDirection(DcMotor.Direction.REVERSE);
         right2.setDirection(DcMotor.Direction.REVERSE);
 
-
         resetEncoders();
+
         // Wait for the game to start (driver presses PLAY)
+
         waitForStart();
-        //angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        // run until the end of the match (driver presses STOP)
-        //pDrive(Target,1, dashboardTelemetry);
-
         gyroDrive(0.5,Target,0,dashboardTelemetry);
 
-
     }
 
-
-
-    public void pDrive(double distance, double speed, Telemetry dashboardTelemetry){
-
-        double velocity;
-        double gain;
-        int target;
-
-        resetEncoders();
-
-        target = (int)(distance * COUNTS_PER_INCH);
-
-        // Set Target and Turn On RUN_TO_POSITION
-        left1.setTargetPosition(target);
-        left2.setTargetPosition(target);
-        right1.setTargetPosition(target);
-        right2.setTargetPosition(target);
-
-        left1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-        while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()) {
-
-            gain = calcGain(target);
-
-            // if driving in reverse, the motor correction also needs to be reversed
-            if (distance < 0)
-                gain *= -1.0;
-
-            velocity = speed*gain;
-            velocity = Range.clip(Math.abs(velocity), 0.0, 1.0);
-
-            left1.setPower(velocity);
-            right1.setPower(velocity);
-            left2.setPower(velocity);
-            right2.setPower(velocity);
-
-           print(target,dashboardTelemetry);
-        }
-
-        // Stop all motion;
-        stopMotors();
-
-        // Turn off RUN_TO_POSITION
-        left1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        left2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        while(opModeIsActive()){
-            print(target, dashboardTelemetry);
-        }
-    }
     public void gyroDrive(double speed, double distance, double angle,Telemetry dashboardTelemetry ) {
 
         int     newLeftTarget;
@@ -209,11 +144,10 @@ public class Drive_Straight_Gyro extends LinearOpMode {
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            resetEncoders();
             // Determine new target position, and pass to motor controller
             moveCounts = (int)(distance * COUNTS_PER_INCH);
-            newLeftTarget = moveCounts;
-            newRightTarget = moveCounts;
+            newLeftTarget = left1.getCurrentPosition() + moveCounts;
+            newRightTarget = right1.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
             left1.setTargetPosition(newLeftTarget);
@@ -226,22 +160,9 @@ public class Drive_Straight_Gyro extends LinearOpMode {
             left2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // start motion.
-            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-           // left1.setPower(speed);
-           // right1.setPower(speed);
-            //left2.setPower(speed);
-            //right2.setPower(speed);
 
-            // Display drive status for the driver.
-           /* telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
-            telemetry.addData("Actual",  "%7d:%7d:%7d:%7d",      leftDrive1.getCurrentPosition(), leftDrive2.getCurrentPosition(),
-                    rightDrive1.getCurrentPosition(), rightDrive2.getCurrentPosition());
-            telemetry.addData("heading", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.firstAngle);
-                }
-            });*/
+            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
+
 
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive() &&
@@ -280,10 +201,7 @@ public class Drive_Straight_Gyro extends LinearOpMode {
             }
 
             // Stop all motion;
-            left1.setPower(0);
-            right1.setPower(0);
-            left2.setPower(0);
-            right2.setPower(0);
+           stopMotors();
 
             // Turn off RUN_TO_POSITION
             left1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -297,9 +215,6 @@ public class Drive_Straight_Gyro extends LinearOpMode {
                 + right1.getCurrentPosition() + right2.getCurrentPosition())/4;
                 // Math.abs returns the absolute value of an argument
     }
-    public double getError(double Target){
-        return Target - getCurrentPosition();
-    }
     public double getErrorAngle(double targetAngle) {
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double robotError;
@@ -312,9 +227,6 @@ public class Drive_Straight_Gyro extends LinearOpMode {
     }
     public double getSteer(double error, double PCoeff) {
         return Range.clip(error * PCoeff, -1, 1);
-    }
-    public double calcGain(double Target){
-        return  Range.clip( getError(Target)*P_DRIVE_COEFF, -1,1);
     }
     public void resetEncoders(){
         left1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -330,26 +242,8 @@ public class Drive_Straight_Gyro extends LinearOpMode {
     }
     public void print(double target, Telemetry dashboardTelemetry){
 
-        //telemetry.addData("Angle", angles.firstAngle);
-        //telemetry.addData("Error in distance", getError(target)/COUNTS_PER_INCH);
-        //telemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
-        //telemetry.update();
-
         dashboardTelemetry.addData("Angle", angles.firstAngle);
         dashboardTelemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
-        dashboardTelemetry.update();
-
-    }
-    public void print2(Telemetry dashboardTelemetry){
-
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        dashboardTelemetry.addData("Angle", angles.firstAngle);
-
-        dashboardTelemetry.addData("left 1", left1.getCurrentPosition() );
-        dashboardTelemetry.addData("left 2", left2.getCurrentPosition() );
-        dashboardTelemetry.addData("right 1", right1.getCurrentPosition() );
-        dashboardTelemetry.addData("right 2", right2.getCurrentPosition() );
-
         dashboardTelemetry.update();
 
     }

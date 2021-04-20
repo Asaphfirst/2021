@@ -627,6 +627,12 @@ public class CardBob extends LinearOpMode
     public double getSteer(double error, double PCoeff) {
         return Range.clip(error * PCoeff, -1, 1);
     }
+    public void printEncoders(){
+        telemetry.addData("Actual",  "%7d:%7d:%7d:%7d",      leftDrive1.getCurrentPosition(), leftDrive2.getCurrentPosition(),
+                rightDrive1.getCurrentPosition(), rightDrive2.getCurrentPosition());
+
+        telemetry.update();
+    }
 
     public void AutonomousA() {
         resetEncoders();
@@ -686,55 +692,8 @@ public class CardBob extends LinearOpMode
         resetEncoders();
         gyroDrive(10,10,0);
 
-/*
-        runtime.reset();
-        while (runtime.seconds() < 1) {
-            intakemotor.setPower(-.5);
-
-            gyroStrafe(DRIVE_SPEED, -40, 0);
-
-            if (sensorColor1.alpha() > 90 && sensorColor2.alpha() < 90) { //find the white line.
-                rightDrive1.setPower(.5);
-                rightDrive2.setPower((.5));
-            } else if (sensorColor1.alpha() < 90 && sensorColor2.alpha() > 90) {
-                leftDrive1.setPower(.5);
-                leftDrive1.setPower(.5);
-
-            } else if (sensorColor1.alpha() > 90 && sensorColor2.alpha() > 90) {
-                gyroHold(0, 0, 1);
-                //move back
-                gyroDrive(DRIVE_SPEED, -3.16, 0);
-
-                //shoot
-                runtime.reset();
-                while (runtime.seconds() < 1) {
-                    shootermotor.setPower(0.9);
-                }
-
-                gyroStrafe(DRIVE_SPEED, -8, 0);
-
-                runtime.reset();
-                while (runtime.seconds() < 1) {
-                    shootermotor.setPower(0.9);
-                }
-
-                gyroStrafe(DRIVE_SPEED, -8, 0);
-
-                runtime.reset();
-                while (runtime.seconds() < 1) {
-                    shootermotor.setPower(0.9);
-                }
-
-                gyroStrafe(DRIVE_SPEED, -8, 0);
 
 
-            } else {
-                leftDrive1.setPower(.5);
-                leftDrive2.setPower(.5);
-                rightDrive1.setPower(.5);
-                rightDrive2.setPower(.5);
-            }
-*/
     }
     public void AutonomousB(){
 
@@ -792,62 +751,7 @@ public class CardBob extends LinearOpMode
         }
         resetEncoders();
         gyroDrive(0.4,7,0);
-        /*
-        gyroDrive(DRIVE_SPEED,70,0);
-        gyroStrafe(DRIVE_SPEED, -17, 0);
-        intakemotor.setPower(-.5);
 
-
-        if (sensorColor1.alpha ()>90 && sensorColor2.alpha()<90){
-            rightDrive1.setPower(-.5);
-            rightDrive2.setPower((-.5));
-        }
-        else if (sensorColor1.alpha ()<90 && sensorColor2.alpha()>90){
-            leftDrive1.setPower(-.5);
-            leftDrive1.setPower(-.5);
-
-        }
-        else if (sensorColor1.alpha ()>90 && sensorColor2.alpha()>90){
-            gyroHold(0,0, 1);
-            //move back
-            gyroDrive(DRIVE_SPEED, -3.16, 0);
-
-            gyroStrafe(DRIVE_SPEED,-1,0);
-            //shoot
-            runtime.reset();
-            while (runtime.seconds()<1) {
-                shootermotor.setPower(0.9);
-            }
-
-            gyroStrafe(DRIVE_SPEED, -8, 0);
-
-            shootermotor.setPower(0.9);
-
-            runtime.reset();
-            while (runtime.seconds()<1) {
-                feedermotor.setPower(1);
-            }
-
-            gyroStrafe(DRIVE_SPEED, -8, 0);
-
-            runtime.reset();
-            while (runtime.seconds()<1) {
-                feedermotor.setPower(1);
-
-            }
-
-            gyroStrafe(DRIVE_SPEED, -8, 0);
-
-
-        }
-        else {
-            leftDrive1.setPower(.5);
-            leftDrive2.setPower(.5);
-            rightDrive1.setPower(.5);
-            rightDrive2.setPower(.5);
-        }
-
-*/
 
     }
     public void AutonomousC(){
@@ -909,69 +813,7 @@ public class CardBob extends LinearOpMode
         resetEncoders();
         gyroDrive(0.4,10,0);
 
-        /*
-        gyroDrive(DRIVE_SPEED,135,0);
-        gyroStrafe(DRIVE_SPEED, 9, 0);
-        runtime.reset();
-        while (runtime.seconds()<1){
-            intakemotor.setPower(-.5);
-        }
-        gyroStrafe(DRIVE_SPEED, -40, 0);
-
-
-        if (sensorColor1.alpha ()>90 && sensorColor2.alpha()<90){
-            rightDrive1.setPower(-.5);
-            rightDrive2.setPower((-.5));
-        }
-        else if (sensorColor1.alpha ()<90 && sensorColor2.alpha()>90){
-            leftDrive1.setPower(-.5);
-            leftDrive1.setPower(-.5);
-
-        }
-        else if (sensorColor1.alpha ()>90 && sensorColor2.alpha()>90){
-            gyroHold(0,0, 1);
-            //move back
-            gyroDrive(DRIVE_SPEED, -3.16, 0);
-
-            gyroStrafe(DRIVE_SPEED,-1,0);
-            //shoot
-            runtime.reset();
-            while (runtime.seconds()<1) {
-                shootermotor.setPower(0.9);
-            }
-
-            gyroStrafe(DRIVE_SPEED, -8, 0);
-
-            runtime.reset();
-            while (runtime.seconds()<1) {
-                shootermotor.setPower(0.9);
-            }
-
-            gyroStrafe(DRIVE_SPEED, -8, 0);
-
-            runtime.reset();
-            while (runtime.seconds()<1) {
-                shootermotor.setPower(0.9);
-            }
-
-            gyroStrafe(DRIVE_SPEED, -8, 0);
-
-
-        }
-        else {
-            leftDrive1.setPower(.5);
-            leftDrive2.setPower(.5);
-            rightDrive1.setPower(.5);
-            rightDrive2.setPower(.5);
-        }
-
-*/
     }
 
-    public void printEncoders(){
-        telemetry.addData("Actual",  "%7d:%7d:%7d:%7d",      leftDrive1.getCurrentPosition(), leftDrive2.getCurrentPosition(),
-                rightDrive1.getCurrentPosition(), rightDrive2.getCurrentPosition());
 
-        telemetry.update();
-    }
 }

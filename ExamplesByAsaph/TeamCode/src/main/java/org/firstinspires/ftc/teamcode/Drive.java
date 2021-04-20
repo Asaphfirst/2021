@@ -84,11 +84,9 @@ public class Drive extends LinearOpMode {
 
     public void Drive(double distance, double speed){
 
-        int target;
-
         resetEncoders();
 
-        target = (int)(distance * COUNTS_PER_INCH);
+        int target = (int)(distance * COUNTS_PER_INCH);
 
         // Set Target and Turn On RUN_TO_POSITION
         left1.setTargetPosition(target);
@@ -102,7 +100,7 @@ public class Drive extends LinearOpMode {
         right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()){
+        while (opModeIsActive() && left1.isBusy() && right1.isBusy() && left2.isBusy() && right2.isBusy()){
 
             left1.setPower(speed);
             right1.setPower(speed);
@@ -120,9 +118,9 @@ public class Drive extends LinearOpMode {
         right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        while(opModeIsActive()) {
+        /*while(opModeIsActive()) {
             print(target);
-        }
+        }*/
 
     }
     public double getCurrentPosition(){
@@ -146,6 +144,7 @@ public class Drive extends LinearOpMode {
         right2.setPower(0);
     }
     public void print(double target){
+
         telemetry.addData("Error", getError(target));
         telemetry.addData("Error in distance", getError(target)/COUNTS_PER_INCH);
         telemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
