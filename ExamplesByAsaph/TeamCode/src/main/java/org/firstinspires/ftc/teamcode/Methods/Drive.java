@@ -27,63 +27,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Methods;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 
 /**
- * This Opmode is an example of a Proportional Controller
- * The drivetrain will move to a target distance using encoders and slow down when it approaches using proportional
- *
- * ---------------------------- PROPORTIONAL ------------------------------------
- * Error = Target - Current Position
- * Target is the distance that the robot will move to
- * Current position is an average of all the encoders
- * Kp is a constant that needs to be tuned
- * Gain = Error*Kp
- * velocity = speed*gain
- * velocity will store the result
- * speed is a constant chosen by the user
- * gain will decrease as the drivetrain approaches the target
- *
- * Proportional controller is a good solution for controlling a drivetrain autonomously,
- * but the robot will never reach the target, there will always be a steady state error.
- * The Steady State Error will not be too big, but it can make the code get stuck in the PDrive loop.
- * The solution for that is to exit the loop once the error is very small.
- *
- * ---------------------------- FTC DASHBOARD ------------------------------------
- * https://acmerobotics.github.io/ftc-dashboard/
- * Kp and target distance can be changed using the dashboard
- * Prints a graph of the position
- * To open the dashboard connect your laptop to the robot's wifi and then access this address using a browser:
- * http://192.168.43.1:8080/dash
+ *This Opmode is an example of how use encoders
+ * The drivetrain will move to a target distance using encoders
+ * Motors stop when the robot reaches the target distance
  */
-@Config
-@Autonomous(name="P_Drive_FTC_Dashboard", group="Linear Opmode")
+
+@Autonomous(name="Drive", group="Linear Opmode")
 @Disabled
-public class P_Drive_FTC_Dashboard extends LinearOpMode {
-
-    FtcDashboard dashboard;
-
+public class Drive extends LinearOpMode {
 
     // Declare OpMode members.
     private DcMotor left1 = null;
     private DcMotor left2 = null;
     private DcMotor right1 = null;
     private DcMotor right2 = null;
-
-    public static  double     kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7;
-    public static  double      Target = 50;
-
 
     static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
@@ -93,13 +60,7 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        dashboard = FtcDashboard.getInstance();
-        Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-
-        //telemetry.addData("Status", "Initialized");
-
-
+        telemetry.addData("Status", "Initialized");
 
         left1  = hardwareMap.get(DcMotor.class, "left_1");
         left2 = hardwareMap.get(DcMotor.class, "left_2");
@@ -112,25 +73,21 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
         right1.setDirection(DcMotor.Direction.REVERSE);
         right2.setDirection(DcMotor.Direction.REVERSE);
 
-
-        resetEncoders();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        pDrive(Target,1, dashboardTelemetry);
+        Drive(50,1);
+
+
 
     }
 
-    public void pDrive(double distance, double speed, Telemetry dashboardTelemetry){
-
-        double velocity;
-        double gain;
-        int target;
+    public void Drive(double distance, double speed){
 
         resetEncoders();
 
-        target = (int)(distance * COUNTS_PER_INCH);
+        int target = (int)(distance * COUNTS_PER_INCH);
 
         // Set Target and Turn On RUN_TO_POSITION
         left1.setTargetPosition(target);
@@ -144,23 +101,13 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
         right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()) {
+        while (opModeIsActive() && left1.isBusy() && right1.isBusy() && left2.isBusy() && right2.isBusy()){
 
-            gain = calcGain(target);
+            left1.setPower(speed);
+            right1.setPower(speed);
+            left2.setPower(speed);
+            right2.setPower(speed);
 
-            // if driving in reverse, the motor correction also needs to be reversed
-            if (distance < 0)
-                gain *= -1.0;
-
-            velocity = speed*gain;
-            velocity = Range.clip(Math.abs(velocity), 0.0, 1.0);
-
-            left1.setPower(velocity);
-            right1.setPower(velocity);
-            left2.setPower(velocity);
-            right2.setPower(velocity);
-
-           print(target,dashboardTelemetry);
         }
 
         // Stop all motion;
@@ -172,9 +119,10 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
         right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        while(opModeIsActive()){
-            print(target, dashboardTelemetry);
-        }
+        /*while(opModeIsActive()) {
+            print(target);
+        }*/
+
     }
     public double getCurrentPosition(){
         return Math.abs(left1.getCurrentPosition() + left2.getCurrentPosition()
@@ -183,9 +131,6 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
     }
     public double getError(double Target){
         return Target - getCurrentPosition();
-    }
-    public double calcGain(double Target){
-        return  Range.clip( getError(Target)*kp, -1,1);
     }
     public void resetEncoders(){
         left1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -199,16 +144,12 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
         right1.setPower(0);
         right2.setPower(0);
     }
-    public void print(double target, Telemetry dashboardTelemetry){
-        /*telemetry.addData("Error", getError(target));
+    public void print(double target){
+
+        telemetry.addData("Error", getError(target));
         telemetry.addData("Error in distance", getError(target)/COUNTS_PER_INCH);
         telemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
-        telemetry.update();*/
-
-
-        dashboardTelemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
-        dashboardTelemetry.update();
-
+        telemetry.update();
     }
 
 }

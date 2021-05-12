@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Gyro;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -76,7 +76,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Config
 @Autonomous(name="Drive straight with gyro", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class Drive_Straight_Gyro extends LinearOpMode {
 
     FtcDashboard dashboard;
@@ -90,7 +90,7 @@ public class Drive_Straight_Gyro extends LinearOpMode {
     private DcMotor right2 = null;
 
     public static  double     P_DRIVE_COEFF = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7; //0.04
-    public static  double     Target = 500;
+    public static  double     Target = 50;
 
 
     static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //

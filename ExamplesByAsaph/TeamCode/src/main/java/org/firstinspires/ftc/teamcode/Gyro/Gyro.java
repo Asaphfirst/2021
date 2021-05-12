@@ -27,14 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Gyro;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -42,69 +40,48 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 /**
- * This Opmode is an example of how to read the angle of the gyroscope (Inertial Sensor) and "reset" the sensor
+ * This Opmode is an example of how to read the angle of the gyroscope (Inertial Sensor)
  * https://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
- *
- *  it's more accurate since you turn to absolute headings instead of relative which will build error with each turn.
- *  https://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
  */
 
-@Autonomous(name="Gyro Reset - Example", group="Linear Opmode")
+@Autonomous(name="Gyro - Example", group="Linear Opmode")
 @Disabled
-public class Gyro_Reset extends LinearOpMode {
+public class Gyro extends LinearOpMode {
 
     // Declare OpMode members.
 
-    private ElapsedTime runtime = new ElapsedTime();
     BNO055IMU imu;
     Orientation angles;
-    Orientation  last_angle = new Orientation();
-    double angle;
 
     @Override
     public void runOpMode() {
 
-
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
 
-        while (opModeIsActive()) {
 
-            if (gamepad1.a)
-                resetGyro();
 
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("Original Angle:", angles.firstAngle);
-            telemetry.addData("Angle:", getAngle());
+        while(opModeIsActive()){
+
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+            telemetry.addData("Angle:", angles.firstAngle);
             telemetry.update();
+
+
 
         }
     }
 
-    public void resetGyro(){
-        last_angle  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        angle = 0;
-    }
-    public double getAngle(){
-
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        double angle = angles.firstAngle - last_angle.firstAngle;
-
-         if (angle < -180)
-            angle += 360;
-        else if (angle > 180)
-            angle -= 360;
-
-        return angle;
-    }
 
 }

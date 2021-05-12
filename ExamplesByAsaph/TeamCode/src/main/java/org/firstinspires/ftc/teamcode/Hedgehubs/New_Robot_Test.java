@@ -27,29 +27,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Hedgehubs;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 /**
  * This file
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-@Disabled
-public class LinearTemplate extends LinearOpMode {
+@TeleOp(name="Shooter Test", group="Linear Opmode")
+//@Disabled
+public class New_Robot_Test extends LinearOpMode {
 
     // Declare OpMode members.
-    private DcMotor leftDrive = null;
+    private DcMotorEx Shooter = null;
+    private  DcMotor Feeder = null;
 
     @Override
     public void runOpMode() {
+
+        Shooter = hardwareMap.get(DcMotorEx.class,"shooter");
+        Feeder = hardwareMap.get(DcMotor.class, "feeder");
+
+        Feeder.setDirection(DcMotor.Direction.FORWARD);
+
+        waitForStart();
+
+        //Shooter.getVelocity(); 2000
+
+        Shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while(opModeIsActive()){
+
+            if(gamepad1.a) {
+
+                Shooter.setVelocity(-1800);
+
+            } else{
+                Shooter.setPower(0.0);
+            }
+            if (gamepad1.b){
+                Feeder.setPower(1);
+            }else{
+                Feeder.setPower(0);
+            }
+
+            telemetry.addData("shooter velocity", Shooter.getVelocity());
+            telemetry.update();
+
+        }
+
 
         }
     }

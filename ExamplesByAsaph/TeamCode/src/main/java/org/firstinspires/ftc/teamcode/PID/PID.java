@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PID;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -122,22 +122,11 @@ public class PID extends LinearOpMode {
         double velocity;
         int target = (int) (distance * COUNTS_PER_INCH);
 
-
-            /*left1.setTargetPosition(target);
-            left2.setTargetPosition(target);
-            right1.setTargetPosition(target);
-            right2.setTargetPosition(target);
-
-            left1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            left2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            right1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
-
             error = target - getCurrentPosition();
             double t1=0;
             PIDTimer.reset();
 
-        while(opModeIsActive()){ //&& Math.abs(error) >= allowable_error_IN){
+        while(opModeIsActive()){
 
             error = target - getCurrentPosition();
 

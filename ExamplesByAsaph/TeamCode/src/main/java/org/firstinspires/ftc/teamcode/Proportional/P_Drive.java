@@ -27,17 +27,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Proportional;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import java.lang.annotation.Target;
+import java.lang.Math;
 
 
 /**
@@ -61,23 +61,18 @@ import java.lang.annotation.Target;
  *
  */
 
-@Autonomous(name="Proportional Drive with Ramp", group="Linear Opmode")
+@Autonomous(name="Proportional Drive", group="Linear Opmode")
 @Disabled
-public class P_Drive_Ramp extends LinearOpMode {
+public class P_Drive extends LinearOpMode {
 
     // Declare OpMode members.
-    private ElapsedTime timer = new ElapsedTime();
     private DcMotor left1 = null;
     private DcMotor left2 = null;
     private DcMotor right1 = null;
     private DcMotor right2 = null;
 
-
-    static final double     INCREMENT   = 0.04;     // amount to ramp motor each CYCLE_MS cycle
-    static final int        CYCLE_MS    =   50;     // period of each cycle
-    static final double     MAX_FWD     =  1.0;     // Maximum FWD power applied to motor
-    static final double     kp =  0.00202674492; // kp=1/(746.6*constant) // 0.00066970265;
-    static final double     COUNTS_PER_MOTOR_REV    = 704.86;    //
+    static final double     kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7;
+    static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;    //
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -86,7 +81,6 @@ public class P_Drive_Ramp extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
-        telemetry.update();
 
         left1  = hardwareMap.get(DcMotor.class, "left_1");
         left2 = hardwareMap.get(DcMotor.class, "left_2");
@@ -97,30 +91,25 @@ public class P_Drive_Ramp extends LinearOpMode {
         left1.setDirection(DcMotor.Direction.FORWARD);
         left2.setDirection(DcMotor.Direction.FORWARD);
         right1.setDirection(DcMotor.Direction.REVERSE);
-        right2.setDirection(DcMotor.Direction.REVERSE );
+        right2.setDirection(DcMotor.Direction.REVERSE);
 
+
+        resetEncoders();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-
-        pDrive(50,1, true);
+        pDrive(50,1);
 
     }
 
-    public void pDrive(double distance, double speed, boolean rampUp){
+    public void pDrive(double distance, double speed){
 
         double velocity;
         double gain;
         int target;
 
-
-        if(rampUp){
-            speed = 0;
-        }
-
         resetEncoders();
-        timer.reset();
 
         target = (int)(distance * COUNTS_PER_INCH);
 
@@ -135,6 +124,7 @@ public class P_Drive_Ramp extends LinearOpMode {
         left2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+
         while (opModeIsActive() && (left1.isBusy() && right1.isBusy()) && left2.isBusy() && right2.isBusy()) {
 
             gain = calcGain(target);
@@ -143,26 +133,15 @@ public class P_Drive_Ramp extends LinearOpMode {
             if (distance < 0)
                 gain *= -1.0;
 
-            if (rampUp) {
-                double x = 1;
-                if (timer.milliseconds() >= CYCLE_MS*x) {
-                    // Keep stepping up until we hit the max value.
-                    x++;
-                    speed += INCREMENT;
-                    if (speed >= MAX_FWD) {
-                        speed = MAX_FWD;
-                    }
-                }
-            }
-
             velocity = speed*gain;
+            velocity = Range.clip(Math.abs(velocity), 0.0, 1.0);
 
             left1.setPower(velocity);
             right1.setPower(velocity);
             left2.setPower(velocity);
             right2.setPower(velocity);
 
-            print(target);
+            telemetry.update();
         }
 
         // Stop all motion;
@@ -175,9 +154,8 @@ public class P_Drive_Ramp extends LinearOpMode {
         right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         while(opModeIsActive()){
-          print(target);
+            print(target);
         }
-
     }
     public double getCurrentPosition(){
         return Math.abs(left1.getCurrentPosition() + left2.getCurrentPosition()
@@ -208,6 +186,5 @@ public class P_Drive_Ramp extends LinearOpMode {
         telemetry.addData("Distance", getCurrentPosition()/COUNTS_PER_INCH);
         telemetry.update();
     }
-
 
 }

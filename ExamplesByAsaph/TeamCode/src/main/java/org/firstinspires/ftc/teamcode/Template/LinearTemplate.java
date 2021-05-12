@@ -27,59 +27,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Template;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 
 /**
- * This Opmode is an example of how to read the angle of the gyroscope (Inertial Sensor)
- * https://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
+ * This file
  */
 
-@Autonomous(name="Gyro - Example", group="Linear Opmode")
+@TeleOp(name="Basic: Linear OpModejhv", group="Linear Opmode")
 @Disabled
-public class Gyro extends LinearOpMode {
+public class LinearTemplate extends LinearOpMode {
 
     // Declare OpMode members.
-
-    BNO055IMU imu;
-    Orientation angles;
+    private DcMotor leftDrive = null;
 
     @Override
     public void runOpMode() {
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-
-
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-        waitForStart();
-
-
-
-        while(opModeIsActive()){
-
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-            telemetry.addData("Angle:", angles.firstAngle);
-            telemetry.update();
-
         }
     }
-
-
-}
