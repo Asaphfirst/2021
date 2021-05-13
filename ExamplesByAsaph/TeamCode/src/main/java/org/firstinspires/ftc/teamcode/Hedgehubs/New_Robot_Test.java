@@ -67,7 +67,7 @@ public class New_Robot_Test extends LinearOpMode {
 
             if(gamepad1.a) {
 
-                Shooter.setVelocity(-1800);
+                Shooter.setVelocity(-1600 );
 
             } else{
                 Shooter.setPower(0.0);
