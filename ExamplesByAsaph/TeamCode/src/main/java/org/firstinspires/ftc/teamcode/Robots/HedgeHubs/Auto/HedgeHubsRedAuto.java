@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Hedgehubs;
+package org.firstinspires.ftc.teamcode.Robots.HedgeHubs.Auto;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -73,9 +73,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * To open the dashboard connect your laptop to the robot's wifi and then access this address using a browser:
  * http://192.168.43.1:8080/dash
  */
-@Autonomous(name="HedgeHubs Does not move RED", group="Linear Opmode")
-//Disabled
-public class HedgeHubsDONTMOVE extends LinearOpMode {
+@Autonomous(name="HedgeHubs RED Auto", group="Linear Opmode")
+@Disabled
+public class HedgeHubsRedAuto extends LinearOpMode {
 
     BNO055IMU imu;
     Orientation angles;
@@ -146,20 +146,13 @@ public class HedgeHubsDONTMOVE extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
 
         waitForStart();
-
-        /*
         resetEncoders();
-        gyroDrive(0.7, -70, 0);
+        gyroDrive(0.7, -60, 0);
         resetEncoders();
-        gyroStrafe(0.4, -14, 0); //-18
+       // gyroStrafe(0.4, 14, 0); //-18
         shootAuto();
         resetEncoders();
         gyroDrive(0.7, -10, 0);
-*/
-        shootAuto();
-        while (opModeIsActive()){
-
-        }
 
 
     }
@@ -403,33 +396,33 @@ public class HedgeHubsDONTMOVE extends LinearOpMode {
 
     public void shootAuto() {
         runtime.reset();
-        while (opModeIsActive() &&runtime.seconds() < 4) {
-            shootermotor.setVelocity(-1700);
+        while (opModeIsActive() &&runtime.seconds() < 3) {
+            shootermotor.setVelocity(-1500);
         }
 
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < 1.5) {
-            shootermotor.setVelocity(-1700);
+            shootermotor.setVelocity(-1500);
             feedermotor.setPower(0.7);
         }
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < 2) {
-            shootermotor.setVelocity(-1700);
+            shootermotor.setVelocity(-1500);
             feedermotor.setPower(0);
         }
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < 1.5) {
-            shootermotor.setVelocity(-1700);
+            shootermotor.setVelocity(-1500);
             feedermotor.setPower(0.7);
         }
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < 2) {
-            shootermotor.setVelocity(-1700);
+            shootermotor.setVelocity(-1500);
             feedermotor.setPower(0);
         }
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < 1.5) {
-            shootermotor.setVelocity(-1700);
+            shootermotor.setVelocity(-1500);
             feedermotor.setPower(0.7);
         }
         runtime.reset();

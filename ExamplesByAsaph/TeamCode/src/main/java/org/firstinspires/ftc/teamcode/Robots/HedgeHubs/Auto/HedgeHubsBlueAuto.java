@@ -27,10 +27,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Hedgehubs;
+package org.firstinspires.ftc.teamcode.Robots.HedgeHubs.Auto;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -42,8 +40,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -77,9 +73,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * To open the dashboard connect your laptop to the robot's wifi and then access this address using a browser:
  * http://192.168.43.1:8080/dash
  */
-@Autonomous(name="HedgeHubs RED Auto", group="Linear Opmode")
-//@Disabled
-public class HedgeHubsRedAuto extends LinearOpMode {
+@Autonomous(name="HedgeHubs Blue Auto", group="Linear Opmode")
+@Disabled
+public class HedgeHubsBlueAuto extends LinearOpMode {
 
     BNO055IMU imu;
     Orientation angles;
@@ -153,7 +149,7 @@ public class HedgeHubsRedAuto extends LinearOpMode {
         resetEncoders();
         gyroDrive(0.7, -60, 0);
         resetEncoders();
-       // gyroStrafe(0.4, 14, 0); //-18
+       // gyroStrafe(0.4, -14, 0); //-18
         shootAuto();
         resetEncoders();
         gyroDrive(0.7, -10, 0);

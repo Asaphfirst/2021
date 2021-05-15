@@ -27,10 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Hedgehubs;
+package org.firstinspires.ftc.teamcode.Robots.HedgeHubs.Auto;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -73,8 +74,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * http://192.168.43.1:8080/dash
  */
 @Autonomous(name="HedgeHubs Does not move BLUE", group="Linear Opmode")
-//Disabled
-public class HedgeHubsDONTMOVEBLUE extends LinearOpMode {
+@Disabled
+public class HedgeHubsRedShooterOnly extends LinearOpMode {
 
     BNO055IMU imu;
     Orientation angles;

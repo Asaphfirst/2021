@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.CardBob;
+package org.firstinspires.ftc.teamcode.Robots.CardBob.Auto;
 
 import android.app.Activity;
 import android.view.View;

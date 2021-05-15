@@ -27,27 +27,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Template;
+package org.firstinspires.ftc.teamcode.Actuators;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-
-/**
- * This file
- */
-
-@TeleOp(name="testesteste", group="Linear Opmode")
+@Autonomous(name = "Concept: Scan Servo", group = "Concept")
 @Disabled
-public class LinearTemplate2 extends LinearOpMode {
-
-    // Declare OpMode members.
-    private DcMotor leftDrive = null;
+public class ServoMotor extends LinearOpMode {
+    // Define class members
+    Servo   servo;
 
     @Override
     public void runOpMode() {
 
+        // Connect to servo (Assume PushBot Left Hand)
+        // Change the text in quotes to match any servo name on your robot.
+        servo = hardwareMap.get(Servo.class, "left_hand");
+
+
+        // Scan servo till stop pressed.
+        while(opModeIsActive()){
+
+         servo.setPosition(1);
+         sleep(1);
+
+         servo.setPosition(0.5);
+         sleep(1);
+
+         servo.setPosition(0);
+         sleep(1);
+
         }
+
+        // Signal done;
+        telemetry.addData(">", "Done");
+        telemetry.update();
     }
+}

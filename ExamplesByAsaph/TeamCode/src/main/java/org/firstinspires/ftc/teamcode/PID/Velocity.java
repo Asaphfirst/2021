@@ -27,52 +27,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Basics;
+package org.firstinspires.ftc.teamcode.PID;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 /**
  * This file
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
+@TeleOp(name="Velocity PID", group="Linear Opmode")
 @Disabled
-public class MotorAuto_Simple extends LinearOpMode {
+public class Velocity extends LinearOpMode {
 
     // Declare OpMode members.
-    private DcMotor leftDrive = null;
+    private DcMotorEx shootermotor = null;
 
     @Override
     public void runOpMode() {
 
-        leftDrive  = hardwareMap.get(DcMotor.class, "l1");
+        shootermotor.setDirection(DcMotor.Direction.REVERSE);
+
+        shootermotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // This enables PID
 
 
-        waitForStart();
+        while(opModeIsActive()){
 
-        leftDrive.setTargetPosition(28*25);
+            shootermotor.setVelocity(1700); //
 
-
-        while(opModeIsActive() && leftDrive.isBusy() ){
-
-            leftDrive.setPower(1);
-        }
-
-        leftDrive.setPower(0);
-
-
-
-
-
-
-
+            telemetry.addData("Shooter velocity:", shootermotor.getVelocity(AngleUnit.DEGREES));
 
         }
 
+             shootermotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER ); // This disables PID
+             shootermotor.setPower(0); // Stop motor
 
-
+        }
     }

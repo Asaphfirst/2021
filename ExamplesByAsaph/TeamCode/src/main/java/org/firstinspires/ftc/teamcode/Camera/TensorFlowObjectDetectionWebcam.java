@@ -225,7 +225,7 @@ public class TensorFlowObjectDetectionWebcam extends LinearOpMode {
         //////////////////////// DON'T CHANGE ANYTHING ABOVE /////////////////////////////////
 
 
-        gyroDrive(0.7,-Target,0, dashboardTelemetry);
+        //gyroDrive(0.7,-Target,0, dashboardTelemetry);
 
         switch (Auto){
             case 'C':
