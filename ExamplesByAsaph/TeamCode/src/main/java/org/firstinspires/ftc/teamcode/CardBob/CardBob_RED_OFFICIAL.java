@@ -41,7 +41,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -91,21 +93,13 @@ import java.util.Locale;
 @Autonomous(name="RED OFFICIAL", group="Pushbot")
 @Disabled
 
-public class CardBob extends LinearOpMode
+public class CardBob_RED_OFFICIAL extends LinearOpMode
 {
 
     ColorSensor Rightbox;
-    DistanceSensor Rightbox2;
-
-    ColorSensor sensorColor1;
-    DistanceSensor sensorDistance1;
-    ColorSensor sensorColor2;
-    DistanceSensor sensorDistance2;
-
     DistanceSensor distanceSensor;
-
+    DistanceSensor distanceSensor2;
     TouchSensor touchSensorarm;
-    // DistanceSensor distanceSensor1;
 
 
     BNO055IMU imu;
@@ -114,17 +108,18 @@ public class CardBob extends LinearOpMode
 
     /* Declare OpMode members. */
     private ElapsedTime     runtime = new ElapsedTime();
+    public static PIDFCoefficients DrivetrainPID = new PIDFCoefficients(25,0.05,1.25,0);
 
     static final double     COUNTS_PER_MOTOR_REV    = 746.6 ;    //
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = ((COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * 3.1415))/1.65;
     static final double     COUNTS_PER_INCH_STRAFE = ((COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * 3.1415))*0.7874015748;
 
-    private DcMotor leftDrive1 = null;
-    private DcMotor rightDrive1 = null;
-    private DcMotor leftDrive2 = null;
-    private DcMotor rightDrive2 = null;
-    private DcMotor shootermotor = null;
+    private DcMotorEx leftDrive1 = null;
+    private DcMotorEx rightDrive1 = null;
+    private DcMotorEx leftDrive2 = null;
+    private DcMotorEx rightDrive2 = null;
+    private DcMotorEx shootermotor = null;
     private DcMotor armmotor = null;
     private DcMotor intakemotor = null;
     private DcMotor feedermotor = null;
@@ -136,12 +131,8 @@ public class CardBob extends LinearOpMode
     @Override
     public void runOpMode() {
 
-        Rightbox = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
-        Rightbox2 = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
-        sensorColor1 = hardwareMap.get(ColorSensor.class, "sensor_color_distance1");
-        sensorDistance1 = hardwareMap.get(DistanceSensor.class, "sensor_color_distance1");
-        sensorColor2 = hardwareMap.get(ColorSensor.class, "sensor_color_distance2");
-        sensorDistance2 = hardwareMap.get(DistanceSensor.class, "sensor_color_distance2");
+        //Rightbox = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        distanceSensor2 = hardwareMap.get(DistanceSensor.class, "distance2");
         touchSensorarm = hardwareMap.get(TouchSensor.class, "armtouch");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
 
@@ -169,14 +160,14 @@ public class CardBob extends LinearOpMode
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        leftDrive1  = hardwareMap.get(DcMotor.class, "left_drive1"); //motor 0
-        rightDrive1  = hardwareMap.get(DcMotor.class, "right_drive1"); //motor 0
-        leftDrive2  = hardwareMap.get(DcMotor.class, "left_drive2"); //motor 0
-        rightDrive2  = hardwareMap.get(DcMotor.class, "right_drive2"); //motor 0
+        leftDrive1  = hardwareMap.get(DcMotorEx.class, "left_drive1"); //motor 0
+        rightDrive1  = hardwareMap.get(DcMotorEx.class, "right_drive1"); //motor 0
+        leftDrive2  = hardwareMap.get(DcMotorEx.class, "left_drive2"); //motor 0
+        rightDrive2  = hardwareMap.get(DcMotorEx.class, "right_drive2"); //motor 0
         feedermotor  = hardwareMap.get(DcMotor.class, "feedermotor"); //motor 0
         armmotor = hardwareMap.get(DcMotor.class, "armmotor"); //motor 4
         intakemotor = hardwareMap.get(DcMotor.class, "intakemotor"); //motor 5
-        shootermotor = hardwareMap.get(DcMotor.class, "shootermotor"); //motor 6
+        shootermotor = hardwareMap.get(DcMotorEx.class, "shootermotor"); //motor 6
 
         leftDrive1.setDirection(DcMotor.Direction.FORWARD);
         rightDrive1.setDirection(DcMotor.Direction.REVERSE);
@@ -190,73 +181,30 @@ public class CardBob extends LinearOpMode
         telemetry.addData(">", "Robot Ready.");    //
         telemetry.update();
 
-        leftDrive1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDrive2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftDrive1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftDrive2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightDrive1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightDrive2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
+        leftDrive1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+        leftDrive2.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+        rightDrive1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+        rightDrive2.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, DrivetrainPID);
+        shootermotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shootermotor.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
 
         intakemotor.setPower(0.35);
 
+        gyroDrive(0.6, 45,0);
+        gyroHold(0,0,1); //pause for 1 second
 
-        Color.RGBToHSV((int) (Rightbox.red() * SCALE_FACTOR),
-                (int) (Rightbox.green() * SCALE_FACTOR),
-                (int) (Rightbox.blue() * SCALE_FACTOR),
-                hsvValues);
-
-        Color.RGBToHSV((int) (sensorColor1.red() * SCALE_FACTOR),
-                (int) (Rightbox.green() * SCALE_FACTOR),
-                (int) (Rightbox.blue() * SCALE_FACTOR),
-                hsvValues1);
-
-        Color.RGBToHSV((int) (sensorColor2.red() * SCALE_FACTOR),
-                (int) (Rightbox.green() * SCALE_FACTOR),
-                (int) (Rightbox.blue() * SCALE_FACTOR),
-                hsvValues1);
-
-        //left is positive, right is negative
-        // gyroDrive(DRIVE_SPEED, 9.1,0.0); //Drive FWD 9.1 inches
-        // gyroStrafe(DRIVE_SPEED,50,0);
-
-        //while (!touchSensorarm.isPressed()){
-        //  armmotor.setPower(-1); //move arm down until touch sensor is pressed
-        //}
-
-
-        gyroDrive(0.2, 38,0);
-        gyroHold(0,0,2); //pause for 2 seconds
-
-
-        // gyroDrive(0.35, 39, 0); //drive fwd 11 inches, (to the rings)
-        //  gyroHold(0,0,2); //pause for 2 seconds
-        // gyroDrive(0.6,10,0);
-/*
-            runtime.reset();
-            while( runtime.seconds() < 3000 && opModeIsActive() ){
-                leftDrive1.setPower(0);
-                leftDrive2.setPower(0);
-                rightDrive1.setPower(0);
-                rightDrive2.setPower(0);
-
-                telemetry.addData("Actual",  "%7d:%7d:%7d:%7d",      leftDrive1.getCurrentPosition(), leftDrive2.getCurrentPosition(),
-                        rightDrive1.getCurrentPosition(), rightDrive2.getCurrentPosition());
-                telemetry.update();
-            }*/
-        Color.RGBToHSV((int) (Rightbox.red() * SCALE_FACTOR),
-                (int) (Rightbox.green() * SCALE_FACTOR),
-                (int) (Rightbox.blue() * SCALE_FACTOR),
-                hsvValues);
-
-        if (hsvValues[0] > 45 && hsvValues[0] < 95) //DETECTING THE RINGS
+        if (distanceSensor2.getDistance(DistanceUnit.INCH) < 4) //DETECTING THE RINGS
         {
-
-            if (hsvValues[1] > 0.5 && hsvValues[1] < 0.95) {
-
-                if (hsvValues[2] > 550 && hsvValues[2] < 16550) {
-
                     if (distanceSensor.getDistance(DistanceUnit.INCH) > 5) {
                         //AUTONOMOUS A PLEASE JUST Put IT IN
+
                         telemetry.addLine("Autonomous B, 1 ring");
                         AutonomousB();
                     } else if (distanceSensor.getDistance(DistanceUnit.INCH) < 5) {
@@ -264,29 +212,11 @@ public class CardBob extends LinearOpMode
                         telemetry.addLine("Autonomous C, 4 rings");
                         AutonomousC();
                     }
-                }
-            }
         } else {
             //AUTONOMOUS B PLEASE JUST PUT IT IN I SWEAR TO GOT LIKE JUST INSERT IT HERE BECAUSE ITS PROLly GONNA BE A
             telemetry.addLine("Autonomous A, no rings");
             AutonomousA();
         }
-
-        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", Rightbox2.getDistance(DistanceUnit.CM)));
-        // telemetry.addData("Alpha", Rightbox.alpha());
-        //  telemetry.addData("Red  ", sensorColor.red());
-        // telemetry.addData("Green", sensorColor.green());
-        //telemetry.addData("Blue ", sensorColor.blue());
-        // telemetry.addData("Hue", hsvValues[0]);
-        //telemetry.addData("Saturation", hsvValues[1]);
-        //telemetry.addData("Value", hsvValues[2]);
-
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-
-
 
     }
 
@@ -636,9 +566,9 @@ public class CardBob extends LinearOpMode
 
     public void AutonomousA() {
         resetEncoders();
-        gyroDrive(0.3, 20, 0);
+        gyroDrive(1, 24, 0);
         resetEncoders();
-        gyroStrafe(0.3, -32, 0);
+        gyroStrafe(1, -32, 0);
 
         runtime.reset();
         while(runtime.seconds()<0.5){
@@ -651,38 +581,43 @@ public class CardBob extends LinearOpMode
         }
         intakemotor.setPower(0);
         resetEncoders();
-        gyroStrafe(0.35,20,0);
+        gyroStrafe(1,20,0);
         resetEncoders();
 
-        gyroDrive(0.35,-2,0);
+        gyroDrive(1,-2,0);
         resetEncoders();
 
-        gyroDrive(0.4,6,0);
+       // gyroDrive(1,6,0);
 
         resetEncoders();
 
         runtime.reset();
         while(runtime.seconds() < 3 ){
-            shootermotor.setPower(-0.8);
+            shootermotor.setVelocity(2000);
         }
 
         runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }
         runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }  runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
@@ -690,7 +625,7 @@ public class CardBob extends LinearOpMode
             feedermotor.setPower(0);
         }
         resetEncoders();
-        gyroDrive(10,10,0);
+        gyroDrive(1,10,0);
 
 
 
@@ -698,9 +633,9 @@ public class CardBob extends LinearOpMode
     public void AutonomousB(){
 
         resetEncoders();
-        gyroDrive(0.35, 45, 0); //15
+        gyroDrive(1, 45, 0); //15
         resetEncoders();
-        gyroStrafe(0.35, -13, 0);
+        gyroStrafe(1, -13, 0);
 
         runtime.reset();
         while(runtime.seconds()<0.5){
@@ -723,42 +658,48 @@ public class CardBob extends LinearOpMode
 
         runtime.reset();
         while(runtime.seconds() < 3 ){
-            shootermotor.setPower(-0.8);
+            shootermotor.setVelocity(2000);
         }
 
         runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }
         runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }  runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }
         resetEncoders();
-        gyroDrive(0.4,7,0);
+        gyroDrive(1,7,0);
 
 
     }
     public void AutonomousC(){
         resetEncoders();
-        gyroDrive(0.35, 68, 0); //15
+        gyroDrive(1, 68, 0); //15
         resetEncoders();
-        gyroStrafe(0.4, -35, 0);
+        gyroStrafe(1, -35, 0);
 
         runtime.reset();
         while(runtime.seconds()<0.5){
@@ -772,11 +713,11 @@ public class CardBob extends LinearOpMode
         intakemotor.setPower(0);
         resetEncoders();
 
-        gyroStrafe(0.4,22,0);
+        gyroStrafe(1,22,0);
         resetEncoders();
-        gyroDrive(0.4,-46.5,0);
+        gyroDrive(1,-46.5,0);
         resetEncoders();
-        gyroDrive(0.4,3,0);
+        gyroDrive(1,3,0);
 
         resetEncoders();
         // resetEncoders();
@@ -784,34 +725,40 @@ public class CardBob extends LinearOpMode
 
         runtime.reset();
         while(runtime.seconds() < 3 ){
-            shootermotor.setPower(-0.8);
+            shootermotor.setVelocity(2000);
         }
 
         runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }
         runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }  runtime.reset();
         while(runtime.seconds() < 1.5){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(-0.7);
         }
         runtime.reset();
         while(runtime.seconds()<2){
+            shootermotor.setVelocity(2000);
             feedermotor.setPower(0);
         }
         resetEncoders();
-        gyroDrive(0.4,10,0);
+        gyroDrive(1,10,0);
 
     }
 

@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.Hedgehubs;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,7 +50,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Config
 @TeleOp(name="HedgeHubs MecanumDrive", group="Linear Opmode")
-
+//@Disabled
 public class MecanumDriveHedgehubs extends LinearOpMode {
 
     // Declare OpMode members.
@@ -148,7 +149,7 @@ public class MecanumDriveHedgehubs extends LinearOpMode {
             double rightPower;
 
             double drive = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
+            double turn = 0.8*gamepad1.right_stick_x; // Changed to limit turning speed
             leftPower = Range.clip(drive + turn, -1.0, 1.0);
             rightPower = Range.clip(drive - turn, -1.0, 1.0);
 
@@ -185,6 +186,17 @@ public class MecanumDriveHedgehubs extends LinearOpMode {
         }
         }
 
+    public void stopRobot(){
+        leftDrive1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        leftDrive2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        rightDrive1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        rightDrive2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftDrive1.setPower(0);
+        leftDrive2.setPower(0);
+        rightDrive1.setPower(0);
+        rightDrive2.setPower(0);
+    }
     public void Print(){
         telemetry.addData("Angle", currentangle.firstAngle);
         telemetry.addData("Drive flag", flagButton);
@@ -198,9 +210,12 @@ public class MecanumDriveHedgehubs extends LinearOpMode {
     public void GamePad2(){
         // Shooter
         if (gamepad2.y) {
-            shootermotor.setVelocity(-1600);
+            shootermotor.setVelocity(-1600); //-1700
             flagRachel = true;
-
+        }
+        else if(gamepad2.a){
+            shootermotor.setVelocity(-1500);
+            flagRachel = true;
         }
         else {
             flagRachel = false;
@@ -297,6 +312,7 @@ public class MecanumDriveHedgehubs extends LinearOpMode {
                 rightDrive2.setVelocity(right2Speed);
 
             }
+            stopRobot(); // Trying to fix the strafe problem
         }
 
         }
@@ -353,8 +369,9 @@ public class MecanumDriveHedgehubs extends LinearOpMode {
                 rightDrive2.setVelocity(right2Speed);
 
             }
-        }
 
+        }
+        stopRobot();
     }
     public double getError(double targetAngle)
     {

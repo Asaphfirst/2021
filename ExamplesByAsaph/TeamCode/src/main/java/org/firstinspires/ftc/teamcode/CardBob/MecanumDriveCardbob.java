@@ -69,7 +69,7 @@ import java.util.Locale;
  */
 
 @TeleOp(name="CardbobMecanumDrive", group="Linear Opmode")
-
+@Disabled
 public class MecanumDriveCardbob extends LinearOpMode {
 
     // Declare OpMode members.
@@ -223,10 +223,14 @@ public class MecanumDriveCardbob extends LinearOpMode {
             /** gamepad 2 functions
              **/
             if (gamepad2.y) {
-                shootermotor.setVelocity(1600);
+                shootermotor.setVelocity(2000); //1400
+                telemetry.addData("Shooter speed", shootermotor.getVelocity());
+                telemetry.update();
 
             } else if (gamepad2.x) {
-                shootermotor.setVelocity(1200);
+                shootermotor.setVelocity(1800);
+                telemetry.addData("Shooter speed", shootermotor.getVelocity());
+                telemetry.update();
             } else {
                 shootermotor.setPower(0);
             }

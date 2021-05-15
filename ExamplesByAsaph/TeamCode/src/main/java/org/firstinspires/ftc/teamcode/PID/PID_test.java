@@ -70,7 +70,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class PID_test extends LinearOpMode {
 
     FtcDashboard dashboard;
-
     // Declare OpMode members.
     private DcMotorEx left1 = null;
     private DcMotorEx left2 = null;
@@ -79,7 +78,6 @@ public class PID_test extends LinearOpMode {
     private DcMotorEx shooter = null;
 
     double integral=0;
-     //Kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7;
     public static PIDFCoefficients DrivetrainPID = new PIDFCoefficients(25,0.05,1.25,0);
     PIDFCoefficients pidOrig,currentPID;
 
@@ -92,7 +90,7 @@ public class PID_test extends LinearOpMode {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
 
-    ElapsedTime PIDTimer = new ElapsedTime();
+   // ElapsedTime PIDTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -162,7 +160,6 @@ public class PID_test extends LinearOpMode {
             right1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             right2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            PIDTimer.reset();
 
         while (opModeIsActive() && left1.isBusy() && left2.isBusy() && right1.isBusy()  && right2.isBusy()){
 
@@ -199,7 +196,6 @@ public class PID_test extends LinearOpMode {
 
         if(dist>greatest_dist) {
             greatest_dist = dist;
-           double time = PIDTimer.time();
         }
 
         
