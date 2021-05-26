@@ -63,7 +63,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 
 @TeleOp(name="CardbobMecanumDrive", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class MecanumDriveCardbob extends LinearOpMode {
 
     // Declare OpMode members.

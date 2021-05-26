@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 
 @TeleOp(name="Using a DC Motor", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class MotorAuto_Simple extends LinearOpMode {
 
     // Declare OpMode members.
@@ -28,6 +28,8 @@ public class MotorAuto_Simple extends LinearOpMode {
         // 25 is the the gearbox reduction
         // This example rotates the wheel once
         leftDrive.setTargetPosition(28*25);
+
+        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
         while(opModeIsActive() && leftDrive.isBusy() ){ //isbusy returns true while the motor's encoder is still counting less than 28*25

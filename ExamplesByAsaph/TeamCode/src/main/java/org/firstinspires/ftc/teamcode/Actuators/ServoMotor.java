@@ -49,17 +49,20 @@ public class ServoMotor extends LinearOpMode {
         servo = hardwareMap.get(Servo.class, "left_hand");
 
 
+        waitForStart();
+
+
         // Scan servo till stop pressed.
         while(opModeIsActive()){
 
          servo.setPosition(1);
-         sleep(1);
+         sleep(1000);
 
          servo.setPosition(0.5);
-         sleep(1);
+         sleep(1000);
 
          servo.setPosition(0);
-         sleep(1);
+         sleep(1000);
 
         }
 

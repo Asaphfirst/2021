@@ -57,7 +57,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
 @Autonomous(name="RED OFFICIAL", group="Pushbot")
-@Disabled
+//@Disabled
 
 public class CardBob_RED_OFFICIAL extends LinearOpMode
 {
@@ -167,8 +167,6 @@ public class CardBob_RED_OFFICIAL extends LinearOpMode
         if (distanceSensor2.getDistance(DistanceUnit.INCH) < 4) //DETECTING THE RINGS
         {
                     if (distanceSensor.getDistance(DistanceUnit.INCH) > 5) {
-                        //AUTONOMOUS A PLEASE JUST Put IT IN
-
                         telemetry.addLine("Autonomous B, 1 ring");
                         AutonomousB();
                     } else if (distanceSensor.getDistance(DistanceUnit.INCH) < 5) {
@@ -529,6 +527,8 @@ public class CardBob_RED_OFFICIAL extends LinearOpMode
     }
 
     public void AutonomousA() {
+
+
         resetEncoders();
         gyroDrive(1, 24, 0);
         resetEncoders();
@@ -553,7 +553,7 @@ public class CardBob_RED_OFFICIAL extends LinearOpMode
 
        // gyroDrive(1,6,0);
 
-        resetEncoders();
+        //resetEncoders();
 
         runtime.reset();
         while(runtime.seconds() < 3 ){
