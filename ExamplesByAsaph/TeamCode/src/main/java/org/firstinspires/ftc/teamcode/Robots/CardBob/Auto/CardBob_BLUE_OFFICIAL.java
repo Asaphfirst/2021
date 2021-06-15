@@ -90,7 +90,7 @@ import java.util.Locale;
  */
 
 @Autonomous(name="BLUE OFFICIAL", group="Pushbot")
-@Disabled
+//@Disabled
 
 public class CardBob_BLUE_OFFICIAL extends LinearOpMode
 {

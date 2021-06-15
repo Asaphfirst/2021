@@ -70,4 +70,5 @@ public class ServoMotor extends LinearOpMode {
         telemetry.addData(">", "Done");
         telemetry.update();
     }
+
 }

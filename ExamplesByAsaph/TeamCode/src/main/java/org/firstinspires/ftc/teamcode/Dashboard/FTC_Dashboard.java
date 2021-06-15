@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 @Config
 @Autonomous(name="FTC_Dashboard", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class FTC_Dashboard extends LinearOpMode {
 
     FtcDashboard dashboard;

@@ -27,82 +27,64 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Gyro;
+package org.firstinspires.ftc.teamcode.Colour;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 /**
- * This Opmode is an example of how to read the angle of the gyroscope (Inertial Sensor)
- * https://ftctechnh.github.io/ftc_app/doc/javadoc/index.html
+ * This file
  */
 
-@Autonomous(name="Gyro - Example", group="Linear Opmode")
+@TeleOp(name="Colour Sensor", group="Linear Opmode")
 @Disabled
-public class Gyro extends LinearOpMode {
+public class ColourSensor extends LinearOpMode {
 
     // Declare OpMode members.
+    ColorSensor sensorColor;
 
-    BNO055IMU imu;
-    Orientation angles;
-
-    private DcMotor left1 = null;
-    private DcMotor right1 = null;
-    double change = 0.05;
-    double speed = 0.8;
-
+    float hsvValues[] = {0F, 0F, 0F};
+    final float values[] = hsvValues;
+    final double SCALE_FACTOR = 255;
 
     @Override
     public void runOpMode() {
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        sensorColor = hardwareMap.get(ColorSensor.class, "colourSensor");
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        left1  = hardwareMap.get(DcMotor.class, "left_1");
-
-
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
         waitForStart();
-
-
 
         while(opModeIsActive()){
 
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+            Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
+                    (int) (sensorColor.green() * SCALE_FACTOR),
+                    (int) (sensorColor.blue() * SCALE_FACTOR),
+                    hsvValues);
 
-            telemetry.addData("Angle:", angles.firstAngle);
-            telemetry.update();
-
-            if(angles.firstAngle > 2){
-                left1.setPower(speed+change);
-                right1.setPower(speed-change);
-            }else if (angles.firstAngle < -2){
-                left1.setPower(speed-change);
-                right1.setPower(speed+change);
+            if (hsvValues[0] < 50 && hsvValues[0] > 30){
+                if (hsvValues[1] > 0.6){
+                    if (hsvValues[2] > 200){
+                        telemetry.addLine("This could be red");
+                        telemetry.update();
+                    } else{
+                        telemetry.addLine("This is not red: Wrong Value");
+                        telemetry.update();
+                    }
+                } else{
+                    telemetry.addLine("This is not red: Wrong Saturation");
+                    telemetry.update();
+                }
             } else{
-                left1.setPower(speed);
-                right1.setPower(speed);
+                telemetry.addLine("This is not red: Wrong Hue");
+                telemetry.update();
+
+                }
             }
-
-
-
         }
-
     }
-
-
-}
