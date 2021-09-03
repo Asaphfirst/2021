@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * This file
  */
 
-@TeleOp(name="Basic: Linear OpModejhv", group="Linear Opmode")
+@TeleOp(name="Linear Template", group="Linear Opmode")
 @Disabled
 public class LinearTemplate extends LinearOpMode {
 
