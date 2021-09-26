@@ -69,7 +69,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 //@Config
 @Autonomous(name="P_Drive_FTC_Dashboard", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class P_Drive_FTC_Dashboard extends LinearOpMode {
 
     FtcDashboard dashboard;
@@ -118,8 +118,10 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        pDrive(Target,1, dashboardTelemetry);
-
+        resetEncoders();
+        while(1==1) {
+            pDrive(Target, 1, dashboardTelemetry);
+        }
     }
 
     public void pDrive(double distance, double speed, Telemetry dashboardTelemetry){
@@ -128,7 +130,7 @@ public class P_Drive_FTC_Dashboard extends LinearOpMode {
         double gain;
         int target;
 
-        resetEncoders();
+        //resetEncoders();
 
         target = (int)(distance * COUNTS_PER_INCH);
 

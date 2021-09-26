@@ -163,19 +163,19 @@ public class PID_test extends LinearOpMode {
 
         while (opModeIsActive() && left1.isBusy() && left2.isBusy() && right1.isBusy()  && right2.isBusy()){
 
-            error = target - getCurrentPosition();
-            print(target,dashboardTelemetry);
-            left1.setPower(1);
-            left2.setPower(1);
-            right1.setPower(1);
-            right2.setPower(1);
+                error = target - getCurrentPosition();
+                print(target,dashboardTelemetry);
+                left1.setPower(1);
+                left2.setPower(1);
+                right1.setPower(1);
+                right2.setPower(1);
 
-        }
+            }
          stopMotors();
 
             while (opModeIsActive() || error>0){
-            error = target - getCurrentPosition();
-            print(target,dashboardTelemetry);
+                    error = target - getCurrentPosition();
+                    print(target,dashboardTelemetry);
         }
     }
 
